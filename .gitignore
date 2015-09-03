@@ -1,0 +1,5 @@
+#Plantilla de botón fondo
+*.xcf
+
+#Archivos Python binary
+*.pyc
