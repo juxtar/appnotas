@@ -8,7 +8,10 @@ import gtk.glade
 import sys
 
 def main():
+    gtk.threads_init()
     gtk.main()
+
+lock = gtk.gdk.lock
 
 class MainWindow:
     def __init__(self, gestor):
