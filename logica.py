@@ -1,5 +1,5 @@
-import almacenamiento
-import interfaz
+import almacenamiento as db
+import interfaz as gui
 import datetime
 import threading
 
@@ -7,7 +7,8 @@ class GestorNotas:
 	"""Aplicacion para gestionar notas"""
 	def __init__(self):
 		self.notas = list()
-		self.main_window = interfaz.MainWindow(self)
+		self.main_window = gui.MainWindow(self)
+		#self.gestordb = db.GestorDB(self)
 
 	def nueva_nota(self, texto, color):
 		"""Interfaz de la clase con las clases de Interfaz de usuario
@@ -26,7 +27,7 @@ class GestorNotas:
 		hora = "{:}:{:}".format(ahora.hour, '0'+str(ahora.minute) if ahora.minute<10 else ahora.minute)
 
 		# Nueva instancia de Nota
-		nota = almacenamiento.Nota(len(self.notas), fecha, hora, texto, hexcolor[color])
+		nota = db.Nota(id=len(self.notas),fecha=fecha, hora=hora, contenido=texto, color=hexcolor[color])
 		# Hilo accede a lista de notas
 		lock_lista_notas.acquire()
 		# Agregar a la lista de Notas
@@ -35,8 +36,8 @@ class GestorNotas:
 		lock_lista_notas.release()
 		# Agregar a la pantalla una InterfazNota con los datos de la nueva nota
 		# Se cambia el formato de la fecha para que sea mas legible
-		with interfaz.lock: # Modifica la pantalla y necesita exclusividad
-			self.main_window.agregar_nota(interfaz.InterfazNota(nota, fecha='{:} de {:}'.format(ahora.day,meses[ahora.month])))
+		with gui.lock: # Modifica la pantalla y necesita exclusividad
+			self.main_window.agregar_nota(gui.InterfazNota(nota, fecha='{:} de {:}'.format(ahora.day,meses[ahora.month])))
 
 	def eliminar_notas(self, lista_notas):
 		"""Interfaz de la clase con las clases de Interfaz de usuario
@@ -49,17 +50,17 @@ class GestorNotas:
 			y llama a remover_nota de la pantalla principal"""
 		lock_lista_notas.acquire() # Pide acceso a lista de notas
 		if len(self.notas) == 0:
-			with interfaz.lock: # Modifica pantalla
+			with gui.lock: # Modifica pantalla
 				self.main_window.mostrar_error(0, 'No hay notas para eliminar.')
 		elif len(lista_notas) == 0:
-			with interfaz.lock: # Modifica pantalla
+			with gui.lock: # Modifica pantalla
 				self.main_window.mostrar_error(0, 'Debe seleccionar una nota a eliminar.')
 		lista_id_notas = [nota.id for nota in self.notas]	# Lista con ids de las notas
 		for id_nota in lista_notas:
 			nota_a_borrar = self.buscar_nota(id_nota)	# Buscar la nota con la id analizada
 			if nota_a_borrar != None:
 				self.notas.remove(nota_a_borrar)	# Remueve de la lista la nota
-				with interfaz.lock: # Modifica pantalla
+				with gui.lock: # Modifica pantalla
 					self.main_window.remover_nota(id_nota)
 		lock_lista_notas.release() # Libera la lista de notas para el uso a otros hilos
 			
@@ -76,5 +77,5 @@ if __name__ == "__main__":
 	# Para asegurar la exclusividad al acceso a la lista de notas, se crea un lock
 	# De manera que solo un hilo puede utilizar la lista
 	lock_lista_notas = threading.Lock()
-	a = GestorNotas()
-	interfaz.main()
+	gestor = GestorNotas()
+	gui.main()
