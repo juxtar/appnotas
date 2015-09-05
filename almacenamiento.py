@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 
 Base = declarative_base()
 
@@ -20,15 +21,27 @@ class GestorBD(object):
 		self.gestor = gestor
 		self.engine = create_engine('sqlite:///appnotas.db', echo=True)
 		Base.metadata.create_all(self.engine)
-		Session = sessionmaker(bind=self.engine)
-		self.session = Session()
+		self.Session = sessionmaker(bind=self.engine)
 
 	def insertar_nota(self, nota):
+		session = self.Session()
 		session.add(nota)
 		session.commit()
 
 	def recuperar_notas(self):
-		return session.query(Nota).all()
+		session = self.Session()
+		notas_a_recuperar = session.query(Nota).all()
+		session.close()
+		return notas_a_recuperar
 
-	def remover_nota(self, id_nota):
-		pass
+	def remover_nota(self, nota):
+		session = self.Session()
+		session.delete(nota)
+		session.commit()
+		session.close()
+
+	def buscar_nota(self, id_nota):
+		session = self.Session()
+		nota = session.query(Nota).filter(Nota.id == id_nota).one()
+		session.close()
+		return nota
