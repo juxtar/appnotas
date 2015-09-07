@@ -19,7 +19,7 @@ class GestorBD(object):
 	"""Clase que interactua con la base de datos para guardar, eliminar y restaurar datos"""
 	def __init__(self, gestor):
 		self.gestor = gestor
-		self.engine = create_engine('sqlite:///appnotas.db', echo=True)
+		self.engine = create_engine('sqlite:///data/appnotas.db', echo=True)
 		Base.metadata.create_all(self.engine)
 		self.Session = sessionmaker(bind=self.engine)
 

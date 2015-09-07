@@ -17,7 +17,7 @@ class MainWindow:
     def __init__(self, gestor):
         self.gestor = gestor
         # Importar de Glade
-        self.gladefile = "data.glade"
+        self.gladefile = "data\data.glade"
         self.glade = gtk.Builder()
         self.glade.add_from_file(self.gladefile)
         self.glade.connect_signals(self)    # Conectar seniales definidas en Glade
@@ -57,9 +57,6 @@ class MainWindow:
                 padre.remove(nota)
                 return 0
         return 1
-
-    def prueba(self, widget):
-        self.mostrar_error(1, 'Apretaste el botón Cancelar', 'Mati se la come')
 
     def mostrar_error(self, ventana, *mensajes):
         """Muestra los errores definidos en mensajes en la parte superior de la ventana.

@@ -3,6 +3,10 @@ import interfaz as gui
 import datetime
 import threading
 
+# Para asegurar la exclusividad al acceso a la base de datos, se crea un lock
+# De manera que solo un hilo puede utilizar la base de datos
+lock_bd = threading.Lock()
+
 class GestorNotas:
 	"""Aplicacion para gestionar notas"""
 	def __init__(self):
@@ -84,9 +88,6 @@ class GestorNotas:
 			return None
 
 if __name__ == "__main__":
-	# Para asegurar la exclusividad al acceso a la lista de notas, se crea un lock
-	# De manera que solo un hilo puede utilizar la lista
-	lock_bd = threading.Lock()
 	gestor = GestorNotas()
 	gestor.recuperar_notas()
 	gui.main()
