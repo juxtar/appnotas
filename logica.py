@@ -2,6 +2,7 @@ import almacenamiento as db
 import interfaz as gui
 from datetime import datetime
 from threading import Lock, Thread
+from base64 import b64encode, b64decode
 
 # Para asegurar la exclusividad al acceso a la base de datos, se crea un lock
 # De manera que solo un hilo puede utilizar la base de datos
@@ -24,7 +25,7 @@ class GestorNotas:
 		lock_bd.release()
 		for nota in notas_recuperadas:
 			with gui.lock:
-				self.main_window.agregar_nota(gui.InterfazNota(nota, fecha=self.fecha_a_string(nota.fecha)))
+				self.main_window.agregar_nota(gui.InterfazNota(nota, fecha=self.fecha_a_string(nota.fecha), contenido=b64decode(nota.contenido)))
 
 	def fecha_a_string(self, fecha):
 		meses = {1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio', 7: 'Julio',
@@ -47,7 +48,7 @@ class GestorNotas:
 		hora = "{:}:{:}".format(ahora.hour, '0'+str(ahora.minute) if ahora.minute<10 else ahora.minute)
 
 		# Nueva instancia de Nota
-		nota = db.Nota(fecha=fecha, hora=hora, contenido=texto, color=hexcolor[color])
+		nota = db.Nota(fecha=fecha, hora=hora, contenido=b64encode(texto), color=hexcolor[color])
 		# Hilo accede a base de datos
 		lock_bd.acquire()
 		# Agregar a la base de datos
@@ -57,7 +58,7 @@ class GestorNotas:
 		# Agregar a la pantalla una InterfazNota con los datos de la nueva nota
 		# Se cambia el formato de la fecha para que sea mas legible
 		with gui.lock: # Modifica la pantalla y necesita exclusividad
-			self.main_window.agregar_nota(gui.InterfazNota(nota, fecha=self.fecha_a_string(fecha)))
+			self.main_window.agregar_nota(gui.InterfazNota(nota, fecha=self.fecha_a_string(fecha), contenido=texto))
 
 	def eliminar_notas(self, lista_notas):
 		"""Interfaz de la clase con las clases de Interfaz de usuario
