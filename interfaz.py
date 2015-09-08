@@ -5,7 +5,7 @@ import pygtk
 pygtk.require("2.0")
 import gtk
 import gtk.glade
-import sys
+from sys import exit as sys_exit
 
 def main():
     gtk.threads_init()
@@ -83,7 +83,7 @@ class MainWindow:
     def destroy_principal(self, widget):
         """Cierra la aplicacion"""
         gtk.main_quit()
-        sys.exit(0)
+        sys_exit(0)
 
     def delete_nueva_nota(self, widget=None, data=None):
         """Esconde la ventana y vuelve los valores a los por defecto"""
