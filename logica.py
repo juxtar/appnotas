@@ -1,11 +1,11 @@
 import almacenamiento as db
 import interfaz as gui
-import datetime
-import threading
+from datetime import datetime
+from threading import Lock, Thread
 
 # Para asegurar la exclusividad al acceso a la base de datos, se crea un lock
 # De manera que solo un hilo puede utilizar la base de datos
-lock_bd = threading.Lock()
+lock_bd = Lock()
 
 class GestorNotas:
 	"""Aplicacion para gestionar notas"""
@@ -14,7 +14,7 @@ class GestorNotas:
 		self.gestordb = db.GestorBD(self)
 
 	def recuperar_notas(self):
-		hilo = threading.Thread(target=self._recuperar_notas)
+		hilo = Thread(target=self._recuperar_notas)
 		hilo.start()
 
 	def _recuperar_notas(self):
@@ -33,7 +33,7 @@ class GestorNotas:
 		return '{:} de {:}'.format(int(dia), meses[int(mes)])
 
 	def nueva_nota(self, texto, color):
-		hilo = threading.Thread(target=self._nueva_nota, args=(texto, color))
+		hilo = Thread(target=self._nueva_nota, args=(texto, color))
 		hilo.start()
 
 	def _nueva_nota(self, texto, color):
@@ -42,7 +42,7 @@ class GestorNotas:
 		hexcolor = {'blanco': '#ffffff', 'amarillo': '#ffd45b', 'azul': '#5bafff', 'rojo': '#ff5b5d'}
 
 		# Tomar fecha y hora actual
-		ahora = datetime.datetime.now()
+		ahora = datetime.now()
 		fecha = "{:}-{:}-{:}".format(ahora.year, ahora.month, ahora.day)
 		hora = "{:}:{:}".format(ahora.hour, '0'+str(ahora.minute) if ahora.minute<10 else ahora.minute)
 
@@ -62,7 +62,7 @@ class GestorNotas:
 	def eliminar_notas(self, lista_notas):
 		"""Interfaz de la clase con las clases de Interfaz de usuario
 			Crea nuevo thread para ejecutar la orden"""
-		hilo = threading.Thread(target=self._eliminar_notas, args=(lista_notas,))
+		hilo = Thread(target=self._eliminar_notas, args=(lista_notas,))
 		hilo.start()
 
 	def _eliminar_notas(self, lista_notas):
